@@ -9,6 +9,7 @@ import streamlit as st
 
 DATA_FILE = Path("care_entries.csv")
 CARE_PLAN_FILE = Path("care_plan.json")
+SAMPLE_DATA_FILE = Path("sample_care_entries.csv")
 
 ENTRY_COLUMNS = [
     "Date",
@@ -318,6 +319,16 @@ def get_checklist(concern_level):
     ]
 
 
+def get_concern_explanation(concern_level):
+    if concern_level == "Low concern":
+        return "Recent entries look relatively stable."
+
+    if concern_level == "Medium concern":
+        return "Some recent observations may need attention."
+
+    return "Several recent observations may be worth reviewing with a trusted support person."
+
+
 def load_entries():
     if not DATA_FILE.exists():
         return pd.DataFrame(columns=ENTRY_COLUMNS)
@@ -346,6 +357,29 @@ def save_entry(entry):
     new_row = pd.DataFrame([entry])
     updated_df = pd.concat([df, new_row], ignore_index=True)
     updated_df.to_csv(DATA_FILE, index=False)
+
+
+def load_sample_data():
+    """Copy sample_care_entries.csv into care_entries.csv, if it's safe to do so."""
+    if not SAMPLE_DATA_FILE.exists():
+        st.warning(
+            "No sample data file was found (expected sample_care_entries.csv in the "
+            "project folder), so nothing was loaded."
+        )
+        return
+
+    existing_df = load_entries()
+    if not existing_df.empty:
+        st.warning(
+            "Sample data was not loaded because care_entries.csv already has entries. "
+            "Delete or rename care_entries.csv first if you want to start over with sample data."
+        )
+        return
+
+    sample_df = pd.read_csv(SAMPLE_DATA_FILE)
+    sample_df.to_csv(DATA_FILE, index=False)
+    st.success(f"Loaded {len(sample_df)} sample entries into care_entries.csv.")
+    st.rerun()
 
 
 def load_care_plan():
@@ -643,6 +677,7 @@ def page_daily_log():
         with col2:
             st.write("Concern level")
             st.markdown(concern_badge(concern_level), unsafe_allow_html=True)
+        st.caption(get_concern_explanation(concern_level))
 
         st.subheader("Caregiver checklist")
         for item in get_checklist(concern_level):
@@ -666,6 +701,7 @@ def page_dashboard():
     with col2:
         st.write("Latest concern level")
         st.markdown(concern_badge(latest["Concern Level"]), unsafe_allow_html=True)
+        st.caption(get_concern_explanation(latest["Concern Level"]))
     col3.metric("Latest log date", latest["Date"].date().strftime("%Y-%m-%d"))
 
     st.subheader("Recent 7-day summary")
@@ -739,6 +775,14 @@ def page_trends():
             st.write("- Stress of 3: +1")
             st.write("- Medication not taken: +2")
             st.write("- Nighttime phone use: +1")
+
+    st.subheader("Most common note tags")
+    common_tags = get_common_tags(df)
+    if common_tags:
+        tag_df = pd.DataFrame(common_tags, columns=["Tag", "Count"]).set_index("Tag")
+        st.bar_chart(tag_df)
+    else:
+        st.write("No note tags have been recorded yet. Tags added on the Daily Log page will show up here.")
 
 
 def page_care_plan():
@@ -888,6 +932,14 @@ def main():
             "to review recent changes. The Care Plan page stores important support information, and "
             "the Export Report page creates a simple downloadable summary."
         )
+
+        st.subheader("Try it with sample data")
+        st.write(
+            "New to CareSignal? Load a few sample daily logs to see how the dashboard, trends, "
+            "and report look with real entries."
+        )
+        if st.button("Load sample data"):
+            load_sample_data()
 
         show_disclaimer()
 

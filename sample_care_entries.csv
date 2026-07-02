@@ -1,7 +1,7 @@
-Date,Sleep Hours,Mood,Stress Level,Medication Taken,Nighttime Phone Use,Notes,Concern Score,Concern Level
-2026-06-25,7.5,4,2,True,False,Normal day with steady routine,0,Low
-2026-06-26,6.5,3,3,True,True,Stayed up late using phone,4,Medium
-2026-06-27,5.0,2,4,True,True,More irritable and tired than usual,6,High
-2026-06-28,4.5,2,5,False,True,Missed medication and slept poorly,9,High
-2026-06-29,6.0,3,3,True,False,Slight improvement after better routine,3,Medium
-2026-06-30,7.0,4,2,True,False,More stable day,0,Low
+Date,Sleep Hours,Mood,Stress Level,Medication Taken,Nighttime Phone Use,Note Tags,Notes,Concern Score,Concern Level
+2026-06-25,7.5,4,2,Yes,No,,Normal day with steady routine,0,Low concern
+2026-06-26,6.5,3,3,Yes,Yes,Sleep disruption,Stayed up late using phone,4,Medium concern
+2026-06-27,5.0,2,4,Yes,Yes,"Agitation, Sleep disruption",More irritable and tired than usual,6,High concern
+2026-06-28,4.5,2,5,No,Yes,"Missed medication, Sleep disruption",Missed medication and slept poorly,9,High concern
+2026-06-29,6.0,3,3,Yes,No,,Slight improvement after better routine,3,Medium concern
+2026-06-30,7.0,4,2,Yes,No,,More stable day,0,Low concern
